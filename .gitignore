@@ -1,2 +1,5 @@
 #Ignore test files
 *main.py
+
+#ignore cache
+*pyc
