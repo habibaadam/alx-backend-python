@@ -10,7 +10,9 @@ from unittest.mock import patch, PropertyMock
 
 class TestGithubOrgClient(unittest.TestCase):
     """class containing tests for github org client"""
-    @parameterized.expand([("google"), ("abc")])
+    @parameterized.expand([
+        ("google"),
+        ("abc")])
     @patch("client.get_json")
     def test_org(self, test_org_name, mock_get_json):
         """tests whether githuborg client returns correct
