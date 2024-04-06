@@ -19,3 +19,4 @@ class TestGithubOrgClient(unittest.TestCase):
         client = GithubOrgClient(test_org_name)
 
         self.assertEqual(client.org, {"test_key": test_org_name})
+
