@@ -4,7 +4,8 @@
 
 import unittest
 from parameterized import parameterized
-from utils import access_nested_map
+from utils import access_nested_map, get_json
+from unittest.mock import patch, MagicMock
 
 
 class TestAccessNestedMap(unittest.TestCase):
@@ -27,3 +28,18 @@ class TestAccessNestedMap(unittest.TestCase):
     def test_access_nested_map_exception(self, nested_map, path):
         """tests for incorrect inputs error"""
         self.assertRaises(KeyError)
+
+
+class TestGetJson(unittest.TestCase):
+    """class for testing the get_json function"""
+    @parameterized.expand([
+        ("http://example.com", {"payload": True}),
+        ("http://holberton.io", {"payload": False})
+    ])
+    @patch("utils.requests.get")
+    def test_get_json(self, test_url, test_payload, mock_requests):
+        """Method for testing the get_json function"""
+        response = MagicMock()
+        response.json.return_value = test_payload
+        mock_requests.return_value = response
+        self.assertEqual(get_json(test_url), test_payload)
