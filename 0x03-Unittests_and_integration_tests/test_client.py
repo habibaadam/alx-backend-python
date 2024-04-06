@@ -5,7 +5,8 @@
 import unittest
 from unittest.mock import patch, PropertyMock
 from client import GithubOrgClient
-from parameterized import parameterized
+from parameterized import parameterized, parameterized_class
+from fixtures import TEST_PAYLOAD
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -21,7 +22,6 @@ class TestGithubOrgClient(unittest.TestCase):
         mock_get_json.return_value = {"test_key": test_org_name}
         client = GithubOrgClient(test_org_name)
         self.assertEqual(client.org, {"test_key": test_org_name})
-
 
     def test_public_repos_url(self):
         """Test that the result of _public_repos_url
@@ -57,3 +57,29 @@ class TestGithubOrgClient(unittest.TestCase):
         client = GithubOrgClient("google")
         self.assertEqual(client.has_license(test_map,
                                             test_license), expected_output)
+
+
+@parameterized_class(
+    ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
+    TEST_PAYLOAD
+)
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """ Class for Integration test of fixtures """
+
+    @classmethod
+    def setUpClass(cls):
+        """A class method called before tests in an individual class are run"""
+        config = {'return_value.json.side_effect':
+                  [
+                      cls.org_payload, cls.repos_payload,
+                      cls.org_payload, cls.repos_payload
+                  ]
+                  }
+        cls.get_patcher = patch('requests.get', **config)
+
+        cls.mock = cls.get_patcher.start()
+
+    @classmethod
+    def tearDownClass(cls):
+        """A class method called after tests in an individual class have run"""
+        cls.get_patcher.stop()
